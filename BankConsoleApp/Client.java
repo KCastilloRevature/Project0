@@ -48,9 +48,11 @@ public class Client {
 	
 	//maybe these methods below can be somewhere else? not entirely sure
 	
-	/*
-	 * get method to return list of accounts based on specified amount: less than,
-	 * greater than, and between a range are the 3 following methods
+	/**
+	 * Get method to return list of accounts based on specified amount: Less Than,
+	 * Greater Than, and Between a Range are the 3 following methods.
+	 * @param amount Amount that is being compared
+	 * @return Resulting HashMap
 	 */
 	public HashMap<Integer, Integer> getAccountsLT(int amount) {
 		HashMap<Integer, Integer> result = new HashMap<Integer, Integer>();
@@ -98,6 +100,11 @@ public class Client {
 	}
 	
 	//adding or removing from balance, transfer uses the combination of both
+	/**
+	 * Method that adds specified amount to client's specified account.
+	 * @param accountID ID that specifies which account client wishes to add
+	 * @param amount Amount that client wishes to add
+	 */
 	public void addAmount(int accountID, int amount) {
 		Set<Integer> acctID = accounts.keySet();
 		for (int id : acctID) {

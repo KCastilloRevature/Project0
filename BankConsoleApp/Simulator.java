@@ -22,6 +22,8 @@ public class Simulator {
 				+ "Add account - add [CLIENT NAME] account\n"
 				+ "Add balance - add [CLIENT NAME] [ACCOUNT ID] [BALANCE]\n"
 				+ "Check client - check [CLIENT NAME]\n"
+				+ "Check accounts - check [CLIENT NAME] [ACCOUNT ID] [LT/GT/RANGE] "
+				+ "[AMOUNT 1] [AMOUNT 2 (for range)]\n"
 				+ "Remove client - remove [CLIENT NAME]\n"
 				+ "Remove account - remove [CLIENT NAME] [ACCOUNT ID]\n"
 				+ "Remove balance - remove [CLIENT NAME] [ACCOUNT ID] [BALANCE]\n"
@@ -72,15 +74,15 @@ public class Simulator {
 			case "add":
 				switch (command.length) {
 					case 2:
-						addClient(command[1]);
+						addClient(command[1].toLowerCase());
 						break;
 						
 					case 3:
-						addAccount(command[1], accountID);
+						addAccount(command[1].toLowerCase(), accountID);
 						accountID++;
 						
 					case 4:
-						addBalance(command[1], Integer.parseInt(command[2]), 
+						addBalance(command[1].toLowerCase(), Integer.parseInt(command[2]), 
 								Integer.parseInt(command[3]));
 				}
 				break;
@@ -88,10 +90,10 @@ public class Simulator {
 			case "remove":
 				switch (command.length) {
 					case 2:
-						removeClient(command[1]);
+						removeClient(command[1].toLowerCase());
 						break;
 					case 3:
-						removeAccount(command[1], Integer.parseInt(command[2]));
+						removeAccount(command[1].toLowerCase(), Integer.parseInt(command[2]));
 						break;
 					case 4:
 						removeBalance(command[1], Integer.parseInt(command[2]), 
@@ -101,8 +103,29 @@ public class Simulator {
 				break;
 				
 			case "check":
-				String checkedClient = command[1].toLowerCase();
-				checkClient(checkedClient);
+				switch (command.length) {
+					case 2:
+						String checkedClient = command[1].toLowerCase();
+						checkClient(checkedClient);
+						break;
+					case 5:
+						String Client = command[1].toLowerCase();
+						Integer acctID = Integer.parseInt(command[2]);
+						String operator = command[3].toLowerCase();
+						Integer amount = Integer.parseInt(command[4]);
+						checkAccount(Client, acctID, operator,
+								amount);
+						break;
+					case 6:
+						String chkdClient = command[1].toLowerCase();
+						Integer accountID = Integer.parseInt(command[2]);
+						String rangeOperator = command[3].toLowerCase();
+						Integer minAmount = Integer.parseInt(command[4]);
+						Integer maxAmount = Integer.parseInt(command[5]);
+						checkAccount(chkdClient, accountID, rangeOperator,
+								minAmount, maxAmount);
+						break;
+				}
 				break;
 				
 			case "transfer":
@@ -126,6 +149,31 @@ public class Simulator {
 		for (Client client : clientDB) {
 			if (client.getName().equals(clientName)) {
 				client.addAccount(accountID, 0);
+			}
+		}
+	}
+	
+	private static void checkAccount(String clientName, int accountID, 
+			String operator, int amount) {
+		for (Client client : clientDB) {
+			if (client.getName().equals(clientName)) {
+				switch (operator) {
+					case "lt":
+						client.getAccountsLT(amount);
+						break;
+					case "gt":
+						client.getAccountsGT(amount);
+						break;
+				}
+			}
+		}
+	}
+	
+	private static void checkAccount(String clientName, int accountID, 
+			String operator, int minAmount, int maxAmount) {
+		for (Client client : clientDB) {
+			if (client.getName().equals(clientName)) {
+				client.getAccountsRange(minAmount, maxAmount);
 			}
 		}
 	}
