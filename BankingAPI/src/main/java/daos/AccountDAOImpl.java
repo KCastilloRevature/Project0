@@ -4,15 +4,21 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+//import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 import models.Account;
-import models.Client;
-import utils.ConnectionUtil;
+//import models.Client;
+//import utils.ConnectionUtil;
 
 public class AccountDAOImpl implements AccountDAO{
+	
+	/*
+	 * If I decide to revisit this project, I would probably make a base
+	 * get method in a seperate class in the services package to avoid
+	 * repetition
+	 */
 	
 	Connection connection;
 	
@@ -75,7 +81,7 @@ public class AccountDAOImpl implements AccountDAO{
 	}
 
 	@Override
-	public List<Account> getClientAccountsByMinAmt(int clientID, int amount) {
+	public List<Account> getClientAccountsByMinAmt(int clientID, float amount) {
 		List<Account> accountList = new ArrayList<Account>();
 		String sql = "SELECT * FROM accounts "
 				+ "WHERE ClientID = ? AND Balance > ?";
@@ -83,7 +89,7 @@ public class AccountDAOImpl implements AccountDAO{
 		try {
 			PreparedStatement prepStatement = connection.prepareStatement(sql);
 			prepStatement.setInt(1, clientID);
-			prepStatement.setInt(2, amount);
+			prepStatement.setFloat(2, amount);
 			ResultSet resultSet = prepStatement.executeQuery();
 			
             while(resultSet.next()) {
@@ -104,7 +110,7 @@ public class AccountDAOImpl implements AccountDAO{
 	}
 
 	@Override
-	public List<Account> getClientAccountsByMaxAmt(int clientID, int amount) {
+	public List<Account> getClientAccountsByMaxAmt(int clientID, float amount) {
 		List<Account> accountList = new ArrayList<Account>();
 		String sql = "SELECT * FROM accounts "
 				+ "WHERE ClientID = ? AND Balance < ?";
@@ -112,7 +118,7 @@ public class AccountDAOImpl implements AccountDAO{
 		try {
 			PreparedStatement prepStatement = connection.prepareStatement(sql);
 			prepStatement.setInt(1, clientID);
-			prepStatement.setInt(2, amount);
+			prepStatement.setFloat(2, amount);
 			ResultSet resultSet = prepStatement.executeQuery();
 			
             while(resultSet.next()) {
@@ -133,7 +139,7 @@ public class AccountDAOImpl implements AccountDAO{
 	}
 
 	@Override
-	public List<Account> getClientAccountsByRange(int clientID, int minAmount, int maxAmount) {
+	public List<Account> getClientAccountsByRange(int clientID, float minAmount, float maxAmount) {
 		List<Account> accountList = new ArrayList<Account>();
 		String sql = "SELECT * FROM accounts "
 				+ "WHERE ClientID = ? AND Balance > ? AND Balance < ?";
@@ -141,8 +147,8 @@ public class AccountDAOImpl implements AccountDAO{
 		try {
 			PreparedStatement prepStatement = connection.prepareStatement(sql);
 			prepStatement.setInt(1, clientID);
-			prepStatement.setInt(2, minAmount);
-			prepStatement.setInt(3, maxAmount);
+			prepStatement.setFloat(2, minAmount);
+			prepStatement.setFloat(3, maxAmount);
 			ResultSet resultSet = prepStatement.executeQuery();
 			
             while(resultSet.next()) {
@@ -163,13 +169,13 @@ public class AccountDAOImpl implements AccountDAO{
 	}
 
 	@Override
-	public void createAccount(Account account) {
+	public void createAccount(int clientID, float balance) {
 		String sql = "INSERT INTO accounts (ClientID, Balance)"
 				+ "VALUES (?, ?)";
 		try {
 			PreparedStatement prepStatement = connection.prepareStatement(sql);
-            prepStatement.setInt(1, account.getClientID());
-            prepStatement.setFloat(2, account.getBalance());
+            prepStatement.setInt(1, clientID);
+            prepStatement.setFloat(2, balance);
             prepStatement.executeUpdate();
 		}
 		
@@ -180,12 +186,12 @@ public class AccountDAOImpl implements AccountDAO{
 	}
 
 	@Override
-	public void deleteAccount(Account account) {
+	public void deleteAccount(int accountID) {
 		String sql = "DELETE FROM accounts "
 				+ "WHERE AccountID = ?";
 		try {
 			PreparedStatement prepStatement = connection.prepareStatement(sql);
-            prepStatement.setInt(1, account.getAccountID());
+            prepStatement.setInt(1, accountID);
             prepStatement.execute();
 		}
 		

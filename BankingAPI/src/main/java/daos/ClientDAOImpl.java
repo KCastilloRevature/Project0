@@ -9,9 +9,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import models.Client;
-import utils.ConnectionUtil;
+//import utils.ConnectionUtil;
 
 public class ClientDAOImpl implements ClientDAO {
+	
+	/*
+	 * If I decide to revisit this project, I would probably make a base
+	 * get method in a seperate class in the services package to avoid
+	 * repetition
+	 */
 	
 	Connection connection;
 	
@@ -91,12 +97,12 @@ public class ClientDAOImpl implements ClientDAO {
 	}
 
 	@Override
-	public void createClient(Client client) {
+	public void createClient(String name) {
 		String sql = "INSERT INTO clients (Name)"
 				+ "VALUES (?)";
 		try {
 			PreparedStatement prepStatement = connection.prepareStatement(sql);
-            prepStatement.setString(1, client.getName());
+            prepStatement.setString(1, name);
             prepStatement.executeUpdate();
 		}
 		
@@ -106,12 +112,12 @@ public class ClientDAOImpl implements ClientDAO {
 	}
 
 	@Override
-	public void deleteClient(Client client) {
+	public void deleteClient(int id) {
 		String sql = "DELETE FROM clients "
-				+ "WHERE Name = ?";
+				+ "WHERE ClientID = ?";
 		try {
 			PreparedStatement prepStatement = connection.prepareStatement(sql);
-            prepStatement.setString(1, client.getName());
+            prepStatement.setInt(1, id);
             prepStatement.execute();
 		}
 		

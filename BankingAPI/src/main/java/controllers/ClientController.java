@@ -2,9 +2,10 @@ package controllers;
 
 import io.javalin.Javalin;
 import io.javalin.http.Context;
-import models.Client;
+//import models.Client;
 import daos.ClientDAOImpl;
 import utils.ConnectionUtil;
+import services.Validator;
 
 public class ClientController {
 
@@ -14,30 +15,49 @@ public class ClientController {
 		javalin = app;
 		app.get("/client", ClientController::getAllClients);
 		app.get("/client/:id", ClientController::getClientByID);
-		app.post("/client/:id", ClientController::insertClient);
+		
+		/*
+		 * This post statement has been slightly modified compared to the
+		 * specified endpoint in order to successfully update my database 
+		 * with the appropriate information.
+		 */
+		app.post("/client/:name", ClientController::insertClient);
+		
 		app.delete("/client/:id", ClientController::deleteClient);
 	}
 	
 	public static void getAllClients(Context ctx) {
 		ClientDAOImpl dao = new ClientDAOImpl(ConnectionUtil.getConnection());
-		dao.getAllClients();
+		ctx.json(dao.getAllClients());
+		ctx.status(200);
 	}
 	
 	public static void getClientByID(Context ctx) {
 		ClientDAOImpl dao = new ClientDAOImpl(ConnectionUtil.getConnection());
-		Integer id = Integer.parseInt(ctx.pathParam("clientID"));
-		dao.getClienttByID(id);
+		Integer id = Integer.parseInt(ctx.pathParam("id"));
+		if (!Validator.ifClientExists(dao, id)) {
+			ctx.status(400);
+			ctx.result("No such client found.");
+		}
+		
+		ctx.json(dao.getClienttByID(id));
 	}
 	
 	public static void insertClient(Context ctx) {
 		ClientDAOImpl dao = new ClientDAOImpl(ConnectionUtil.getConnection());
-		Client row = ctx.bodyAsClass(Client.class);
-		dao.createClient(row);
+		String name = ctx.pathParam("name");
+		dao.createClient(name);
+		ctx.status(201);
 	}
 	
 	public static void deleteClient(Context ctx) {
 		ClientDAOImpl dao = new ClientDAOImpl(ConnectionUtil.getConnection());
-		Client row = ctx.bodyAsClass(Client.class);
-		dao.deleteClient(row);
+		Integer id = Integer.parseInt(ctx.pathParam("id"));
+		if (!Validator.ifClientExists(dao, id)) {
+			ctx.status(400);
+			ctx.result("No such client found.");
+		}
+		
+		dao.deleteClient(id);
 	}
 }
