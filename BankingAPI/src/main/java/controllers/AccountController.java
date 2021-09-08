@@ -19,6 +19,7 @@ public class AccountController {
 	 * be in their own classes.
 	 */
 	
+	//initializes endpoints that require me to modify my accounts table
 	public static void init(Javalin app) {
 		javalin = app;
 		app.get("/client/:clientID/accounts", 
@@ -63,12 +64,21 @@ public class AccountController {
 				AccountController::deleteAccount);
 	}
 	
+	/**
+	 * Executes the GET endpoint that returns a list of client account
+	 * objects
+	 * @param ctx 
+	 */
 	public static void getAllClientAccounts(Context ctx) {
 		AccountDAOImpl dao = new AccountDAOImpl(ConnectionUtil.getConnection());
 		int clientID = Integer.parseInt(ctx.pathParam("clientID"));
 		ctx.json(dao.getAllClientAccounts(clientID));
 	}
 	
+	/**
+	 * Executes the GET endpoint that returns a client account by specified ID
+	 * @param ctx
+	 */
 	public static void getClientAccountByID(Context ctx) {
 		AccountDAOImpl dao = new AccountDAOImpl(ConnectionUtil.getConnection());
 		int clientID = Integer.parseInt(ctx.pathParam("clientID"));
@@ -83,11 +93,23 @@ public class AccountController {
 		
 	}
 	
+	/*
+	 * For some reason, the method below is bugged, it's not 
+	 * filtering out results based on amounts and is identical
+	 * to getAllClientAccounts() at the moment.
+	 */
+	
+	/**
+	 * (Test Method) Executes the GET endpoint that 
+	 * returns a client account that have balances that
+	 * are less than specified amount
+	 * @param ctx
+	 */
 	public static void getClientAccountLessThan(Context ctx) {
 		AccountDAOImpl accountDAO = new AccountDAOImpl(ConnectionUtil.getConnection());
 		ClientDAOImpl clientDAO = new ClientDAOImpl(ConnectionUtil.getConnection());
 		int clientID = Integer.parseInt(ctx.pathParam("clientID"));
-		int amount = Integer.parseInt(ctx.pathParam("amount"));
+		float amount = Float.parseFloat(ctx.pathParam("amount"));
 		if (!Validator.ifClientExists(clientDAO, clientID)) {
 			ctx.status(404);
 			ctx.result("No such client exists");
@@ -98,11 +120,23 @@ public class AccountController {
 		
 	}
 	
+	/*
+	 * For some reason, the method below is bugged, it's not 
+	 * filtering out results based on amounts and is identical
+	 * to getAllClientAccounts() at the moment.
+	 */
+	
+	/**
+	 * (Test Method) Executes the GET endpoint that 
+	 * returns a client account that have balances that
+	 * are greater than specified amount
+	 * @param ctx
+	 */
 	public static void getClientAccountGreaterThan(Context ctx) {
 		AccountDAOImpl dao = new AccountDAOImpl(ConnectionUtil.getConnection());
 		ClientDAOImpl clientDAO = new ClientDAOImpl(ConnectionUtil.getConnection());
 		int clientID = Integer.parseInt(ctx.pathParam("clientID"));
-		int amount = Integer.parseInt(ctx.pathParam("amount"));
+		float amount = Float.parseFloat(ctx.pathParam("amount"));
 		if (!Validator.ifClientExists(clientDAO, clientID)) {
 			ctx.status(404);
 			ctx.result("No such client exists");
@@ -113,12 +147,24 @@ public class AccountController {
 		
 	}
 	
+	/*
+	 * For some reason, the method below is bugged, it's not 
+	 * filtering out results based on amounts and is identical
+	 * to getAllClientAccounts() at the moment.
+	 */
+	
+	/**
+	 * Executes the GET endpoint that 
+	 * returns a client account that have balances that
+	 * are within a specified range
+	 * @param ctx
+	 */
 	public static void getClientAccountRange(Context ctx) {
 		AccountDAOImpl dao = new AccountDAOImpl(ConnectionUtil.getConnection());
 		ClientDAOImpl clientDAO = new ClientDAOImpl(ConnectionUtil.getConnection());
 		int clientID = Integer.parseInt(ctx.pathParam("clientID"));
-		int minAmount = Integer.parseInt(ctx.pathParam("minAmount"));
-		int maxAmount = Integer.parseInt(ctx.pathParam("maxAmount"));
+		float minAmount = Float.parseFloat(ctx.pathParam("minAmount"));
+		float maxAmount = Float.parseFloat(ctx.pathParam("maxAmount"));
 		if (!Validator.ifClientExists(clientDAO, clientID)) {
 			ctx.status(404);
 			ctx.result("No such client exists");
@@ -128,7 +174,11 @@ public class AccountController {
 		}
 		
 	}
-	
+	/**
+	 * Executes the POST endpoint that creates an account
+	 * onto the database
+	 * @param ctx
+	 */
 	public static void insertAccount(Context ctx) {
 		AccountDAOImpl dao = new AccountDAOImpl(ConnectionUtil.getConnection());
 		int clientID = Integer.parseInt(ctx.pathParam("clientID"));
@@ -137,11 +187,16 @@ public class AccountController {
 		ctx.status(201);
 	}
 	
+	/**
+	 * Executes the PUT endpoint that updates an account with a 
+	 * new balance on the database
+	 * @param ctx
+	 */
 	public static void updateAccount(Context ctx) {
 		AccountDAOImpl dao = new AccountDAOImpl(ConnectionUtil.getConnection());
 		int clientID = Integer.parseInt(ctx.pathParam("clientID"));
 		int accountID = Integer.parseInt(ctx.pathParam("accountID"));
-		int amount = Integer.parseInt(ctx.pathParam("amount"));
+		float amount = Float.parseFloat(ctx.pathParam("amount"));
 		if (!Validator.ifAccountExists(dao, clientID, accountID)) {
 			ctx.status(404);
 			ctx.result("No such account exists");
@@ -152,6 +207,11 @@ public class AccountController {
 		
 	}
 	
+	/**
+	 * Executes the DELETE endpoint that deletes an account 
+	 * from the database
+	 * @param ctx
+	 */
 	public static void deleteAccount(Context ctx) {
 		AccountDAOImpl dao = new AccountDAOImpl(ConnectionUtil.getConnection());
 		int accountID = Integer.parseInt(ctx.pathParam("accountID"));
@@ -166,6 +226,11 @@ public class AccountController {
 		
 	}
 	
+	/**
+	 * Executes the PATCH endpoint that deposits or withdraws money from an
+	 * account in the database
+	 * @param ctx
+	 */
 	public static void depositOrWithdraw(Context ctx) {
 		AccountDAOImpl dao = new AccountDAOImpl(ConnectionUtil.getConnection());
 		int accountID = Integer.parseInt(ctx.pathParam("accountID"));
@@ -196,6 +261,11 @@ public class AccountController {
 		}
 	}
 	
+	/**
+	 * Executes the PATCH endpoint that transfer money between two
+	 * accounts in the database
+	 * @param ctx
+	 */
 	public static void transferAccount(Context ctx) {
 		AccountDAOImpl accountDAO = new AccountDAOImpl(ConnectionUtil.getConnection());
 		ClientDAOImpl clientDAO = new ClientDAOImpl(ConnectionUtil.getConnection());
@@ -232,6 +302,11 @@ public class AccountController {
 		}
 	}
 	
+	/**
+	 * Parses the jsonObject that is within the request body
+	 * @param json = String that will be parsed
+	 * @return
+	 */
 	public static String[] jsonParser(String json) {
 		String[] finishedJSON = new String[2];
 		String[] parser = json.split("\"");

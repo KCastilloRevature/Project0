@@ -12,16 +12,19 @@ import java.util.Random;
 
 public class Driver {
 	
-	public static Faker faker = new Faker();
-	public static Random random = new Random();
+	//objects used to populate my database
+//	public static Faker faker = new Faker();
+//	public static Random random = new Random();
+	
     public static void main(String[] args) {
-
+    	
+    	//starts the Javalin app and initializes the endpoints
         Javalin app = Javalin.create().start(42069);
         Connection connection = ConnectionUtil.getConnection();
         ClientController.init(app);
         AccountController.init(app);
         
-        //This snippet of code is used to initialize my database for testing
+        //This snippet of code is used to populate my database for testing
         
 //        ClientDAOImpl clientDB = new ClientDAOImpl(connection);
 //        AccountDAOImpl accountDB = new AccountDAOImpl(connection);

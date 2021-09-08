@@ -26,6 +26,12 @@ public class AccountDAOImpl implements AccountDAO{
 		connection = conn;
 	}
 
+	/**
+	 * Executes the SQL statement that gets all accounts from a
+	 * specific client and returns a List of said accounts
+	 * @param clientID = clientID needed to specify 
+	 * which client's accounts to return
+	 */
 	@Override
 	public List<Account> getAllClientAccounts(int clientID) {
 		List<Account> accountList = new ArrayList<Account>();
@@ -54,6 +60,14 @@ public class AccountDAOImpl implements AccountDAO{
 		return accountList;
 	}
 
+	/**
+	 * Executes the SQL statement that searches for a specific 
+	 * client's account and returns said account
+	 * @param clientID = clientID needed to specify 
+	 * which client's account to return
+	 * @param accountID = accountID needed to specify
+	 * which account to return
+	 */
 	@Override
 	public Account getClientAccountByID(int clientID, int accountID) {
 		Account resultAccount = null;
@@ -81,6 +95,14 @@ public class AccountDAOImpl implements AccountDAO{
 		return resultAccount;
 	}
 
+	/**
+	 * (Test Method)
+	 * Executes the SQL statement that gets a client's accounts that are
+	 * more than a specific amount and returns said accounts
+	 * @param clientID = clientID needed to specify 
+	 * which client's accounts to return
+	 * @param amount = amount to compare accounts with
+	 */
 	@Override
 	public List<Account> getClientAccountsByMinAmt(int clientID, float amount) {
 		List<Account> accountList = new ArrayList<Account>();
@@ -110,6 +132,14 @@ public class AccountDAOImpl implements AccountDAO{
 		return accountList;
 	}
 
+	/**
+	 * (Test Method)
+	 * Executes the SQL statement that gets a client's accounts that are
+	 * less than a specific amount and returns said accounts
+	 * @param clientID = clientID needed to specify 
+	 * which client's accounts to return
+	 * @param amount = amount to compare accounts with
+	 */
 	@Override
 	public List<Account> getClientAccountsByMaxAmt(int clientID, float amount) {
 		List<Account> accountList = new ArrayList<Account>();
@@ -139,6 +169,14 @@ public class AccountDAOImpl implements AccountDAO{
 		return accountList;
 	}
 
+	/**
+	 * Executes the SQL statement that gets a client's accounts that are
+	 * within a specific range and returns said accounts
+	 * @param clientID = clientID needed to specify 
+	 * which client's accounts to return
+	 * @param minAmount = minimum amount in range
+	 * @param maxAmount = maximum amount in range
+	 */
 	@Override
 	public List<Account> getClientAccountsByRange(int clientID, float minAmount, float maxAmount) {
 		List<Account> accountList = new ArrayList<Account>();
@@ -169,6 +207,13 @@ public class AccountDAOImpl implements AccountDAO{
 		return accountList;
 	}
 
+	/**
+	 * Executes the SQL statement that creates an account in
+	 * the account table in the database
+	 * @param clientID = clientID needed to specify which
+	 * client will have said account
+	 * @param balance = specifies how much money is in new account
+	 */
 	@Override
 	public void createAccount(int clientID, float balance) {
 		String sql = "INSERT INTO accounts (ClientID, Balance) "
@@ -186,6 +231,11 @@ public class AccountDAOImpl implements AccountDAO{
 		
 	}
 
+	/**
+	 * Executes the SQL statement that deletes an account in
+	 * the account table in the database
+	 * @param accountID = specifies which account should be deleted
+	 */
 	@Override
 	public void deleteAccount(int accountID) {
 		String sql = "DELETE FROM accounts "
@@ -202,6 +252,12 @@ public class AccountDAOImpl implements AccountDAO{
 		
 	}
 
+	/**
+	 * Executes the SQL statement in which an ammount is added to
+	 * an account's balance
+	 * @param accountID = specifies which account will be deposited
+	 * @param balance = specifies the amount that will be deposited
+	 */
 	@Override
 	public void deposit(int accountID, float balance) {
 		String sql = "UPDATE accounts "
@@ -219,6 +275,12 @@ public class AccountDAOImpl implements AccountDAO{
 		}
 	}
 
+	/**
+	 * Executes the SQL statement in which an ammount is subtracted from
+	 * an account's balance
+	 * @param accountID = specifies which account will be withdrawn
+	 * @param balance = specifies the amount that will be withdrawn
+	 */
 	@Override
 	public void withdraw(int accountID, float balance) {
 		String sql = "UPDATE accounts "
@@ -236,6 +298,12 @@ public class AccountDAOImpl implements AccountDAO{
 		}
 	}
 
+	/**
+	 * Executes the SQL statement in which an ammount is updated to
+	 * an account's balance
+	 * @param accountID = specifies which account will be updated
+	 * @param amount = specifies the amount that will be updated
+	 */
 	@Override
 	public void update(int accountID, float amount) {
 		String sql = "UPDATE accounts "

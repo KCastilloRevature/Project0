@@ -27,12 +27,22 @@ public class ClientController {
 		app.delete("/client/:id", ClientController::deleteClient);
 	}
 	
+	/**
+	 * Executes the GET endpoint that returns all clients 
+	 * from the client table
+	 * @param ctx
+	 */
 	public static void getAllClients(Context ctx) {
 		ClientDAOImpl dao = new ClientDAOImpl(ConnectionUtil.getConnection());
 		ctx.json(dao.getAllClients());
 		ctx.status(200);
 	}
 	
+	/**
+	 * Executes the GET endpoint that returns specific account by
+	 * Client ID
+	 * @param ctx
+	 */
 	public static void getClientByID(Context ctx) {
 		ClientDAOImpl dao = new ClientDAOImpl(ConnectionUtil.getConnection());
 		Integer id = Integer.parseInt(ctx.pathParam("id"));
@@ -44,6 +54,11 @@ public class ClientController {
 		ctx.json(dao.getClienttByID(id));
 	}
 	
+	/**
+	 * Executes the PUT endpoint that creates a Client in the client
+	 * table in the database
+	 * @param ctx
+	 */
 	public static void insertClient(Context ctx) {
 		ClientDAOImpl dao = new ClientDAOImpl(ConnectionUtil.getConnection());
 		String name = ctx.pathParam("name");
@@ -51,6 +66,11 @@ public class ClientController {
 		ctx.status(201);
 	}
 	
+	/**
+	 * Executes the PUT endpoint that updates a Client in the client
+	 * table in the database
+	 * @param ctx
+	 */
 	public static void updateClient(Context ctx) {
 		ClientDAOImpl dao = new ClientDAOImpl(ConnectionUtil.getConnection());
 		Integer id = Integer.parseInt(ctx.pathParam("id"));
@@ -65,6 +85,11 @@ public class ClientController {
 		
 	}
 	
+	/**
+	 * Executes the DELETE endpoint that deletes a Client in the Client
+	 * table in the database
+	 * @param ctx
+	 */
 	public static void deleteClient(Context ctx) {
 		ClientDAOImpl dao = new ClientDAOImpl(ConnectionUtil.getConnection());
 		Integer id = Integer.parseInt(ctx.pathParam("id"));
