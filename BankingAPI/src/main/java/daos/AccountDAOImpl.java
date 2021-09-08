@@ -29,11 +29,12 @@ public class AccountDAOImpl implements AccountDAO{
 	@Override
 	public List<Account> getAllClientAccounts(int clientID) {
 		List<Account> accountList = new ArrayList<Account>();
-		String sql = "SELECT * FROM accounts"
+		String sql = "SELECT * FROM accounts "
 				+ "WHERE ClientID = ?";
 		try {
 			PreparedStatement prepStatement = connection.prepareStatement(sql);
 			prepStatement.setInt(1, clientID);
+			//System.out.println(prepStatement.toString());
 			ResultSet resultSet = prepStatement.executeQuery();
 			
             while(resultSet.next()) {
@@ -57,7 +58,7 @@ public class AccountDAOImpl implements AccountDAO{
 	public Account getClientAccountByID(int clientID, int accountID) {
 		Account resultAccount = null;
 		String sql = "SELECT * FROM accounts "
-				+ "WHERE ClientID = ?"
+				+ "WHERE ClientID = ? "
 				+ "AND AccountID = ?";
 		try {
 			PreparedStatement prepStatement = connection.prepareStatement(sql);
@@ -112,14 +113,14 @@ public class AccountDAOImpl implements AccountDAO{
 	@Override
 	public List<Account> getClientAccountsByMaxAmt(int clientID, float amount) {
 		List<Account> accountList = new ArrayList<Account>();
-		String sql = "SELECT * FROM accounts "
-				+ "WHERE ClientID = ? AND Balance < ?";
-		
+		String sql = "SELECT * FROM accounts WHERE ClientID = ? AND Balance < ?";	
 		try {
 			PreparedStatement prepStatement = connection.prepareStatement(sql);
 			prepStatement.setInt(1, clientID);
 			prepStatement.setFloat(2, amount);
 			ResultSet resultSet = prepStatement.executeQuery();
+			System.out.println(prepStatement.toString());
+			System.out.println(resultSet.toString());
 			
             while(resultSet.next()) {
             	int accountID = resultSet.getInt("accountID");
@@ -170,7 +171,7 @@ public class AccountDAOImpl implements AccountDAO{
 
 	@Override
 	public void createAccount(int clientID, float balance) {
-		String sql = "INSERT INTO accounts (ClientID, Balance)"
+		String sql = "INSERT INTO accounts (ClientID, Balance) "
 				+ "VALUES (?, ?)";
 		try {
 			PreparedStatement prepStatement = connection.prepareStatement(sql);
@@ -208,8 +209,8 @@ public class AccountDAOImpl implements AccountDAO{
 				+ "WHERE AccountID = ?";
 		try {
 			PreparedStatement prepStatement = connection.prepareStatement(sql);
-            prepStatement.setInt(1, accountID);
-            prepStatement.setFloat(2, balance);
+            prepStatement.setFloat(1, balance);
+            prepStatement.setInt(2, accountID);
             prepStatement.execute();
 		}
 		
@@ -225,8 +226,8 @@ public class AccountDAOImpl implements AccountDAO{
 				+ "WHERE AccountID = ?";
 		try {
 			PreparedStatement prepStatement = connection.prepareStatement(sql);
-            prepStatement.setInt(1, accountID);
-            prepStatement.setFloat(2, balance);
+            prepStatement.setFloat(1, balance);
+            prepStatement.setInt(2, accountID);
             prepStatement.execute();
 		}
 		
@@ -242,8 +243,8 @@ public class AccountDAOImpl implements AccountDAO{
 				+ "WHERE AccountID = ?";
 		try {
 			PreparedStatement prepStatement = connection.prepareStatement(sql);
-            prepStatement.setInt(1, accountID);
-            prepStatement.setFloat(2, amount);
+            prepStatement.setFloat(1, amount);
+            prepStatement.setInt(2, accountID);
             prepStatement.execute();
 		}
 		

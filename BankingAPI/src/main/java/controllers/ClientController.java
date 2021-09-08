@@ -23,6 +23,7 @@ public class ClientController {
 		 */
 		app.post("/client/:name", ClientController::insertClient);
 		
+		app.put("/client/:id/:name", ClientController::updateClient);
 		app.delete("/client/:id", ClientController::deleteClient);
 	}
 	
@@ -50,6 +51,20 @@ public class ClientController {
 		ctx.status(201);
 	}
 	
+	public static void updateClient(Context ctx) {
+		ClientDAOImpl dao = new ClientDAOImpl(ConnectionUtil.getConnection());
+		Integer id = Integer.parseInt(ctx.pathParam("id"));
+		String name = ctx.pathParam("name");
+		if (!Validator.ifClientExists(dao, id)) {
+			ctx.status(400);
+			ctx.result("No such client found.");
+		}
+		else {
+			dao.updateClient(id, name);
+		}
+		
+	}
+	
 	public static void deleteClient(Context ctx) {
 		ClientDAOImpl dao = new ClientDAOImpl(ConnectionUtil.getConnection());
 		Integer id = Integer.parseInt(ctx.pathParam("id"));
@@ -57,7 +72,9 @@ public class ClientController {
 			ctx.status(400);
 			ctx.result("No such client found.");
 		}
-		
-		dao.deleteClient(id);
+		else {
+			dao.deleteClient(id);
+			ctx.status(205);
+		}
 	}
 }

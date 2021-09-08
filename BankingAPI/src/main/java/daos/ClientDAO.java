@@ -8,5 +8,6 @@ public interface ClientDAO {
 	public Client getClientByName(String name);
 	public Client getClienttByID(int id);
 	public void createClient(String name);
+	public void updateClient(int id, String name);
 	public void deleteClient(int id);
 }

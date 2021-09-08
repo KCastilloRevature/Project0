@@ -110,6 +110,23 @@ public class ClientDAOImpl implements ClientDAO {
 			e.printStackTrace();
 		}
 	}
+	
+	@Override
+	public void updateClient(int id, String name) {
+		String sql = "UPDATE clients "
+				+ "SET Name = ?"
+				+ "WHERE ClientID = ?";
+		try {
+			PreparedStatement prepStatement = connection.prepareStatement(sql);
+            prepStatement.setString(1, name);
+            prepStatement.setInt(2, id);
+            prepStatement.execute();
+		}
+		
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public void deleteClient(int id) {

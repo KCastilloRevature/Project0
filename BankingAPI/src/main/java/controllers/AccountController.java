@@ -42,7 +42,7 @@ public class AccountController {
 		 * to fulfill a validation check that was required of me.
 		 */
 		app.patch("/clientF/:clientFrom/clientT/:clientTo"
-				+ "accounts/:accountFrom"
+				+ "/accounts/:accountFrom"
 				+ "/transfer/:accountTo", 
 				AccountController::transferAccount);
 		
@@ -53,7 +53,11 @@ public class AccountController {
 		app.post("/client/:clientID/accounts/:balance", 
 				AccountController::insertAccount);
 		
-		app.put("/client/:clientID/accounts/:accountID",
+		/*
+		 * This particular REST endpoint has been slightly modified in order
+		 * to update a specified balance to an account upon instantiation.
+		 */
+		app.put("/client/:clientID/accounts/:accountID/:amount",
 				AccountController::updateAccount);
 		app.delete("/client/:clientID/accounts/:accountID", 
 				AccountController::deleteAccount);
@@ -73,7 +77,10 @@ public class AccountController {
 			ctx.status(404);
 			ctx.result("No such account exists");
 		}
-		ctx.json(dao.getClientAccountByID(clientID, accountID));
+		else {
+			ctx.json(dao.getClientAccountByID(clientID, accountID));
+		}
+		
 	}
 	
 	public static void getClientAccountLessThan(Context ctx) {
@@ -85,7 +92,10 @@ public class AccountController {
 			ctx.status(404);
 			ctx.result("No such client exists");
 		}
-		ctx.json(accountDAO.getClientAccountsByMinAmt(clientID, amount));
+		else {
+			ctx.json(accountDAO.getClientAccountsByMaxAmt(clientID, amount));
+		}
+		
 	}
 	
 	public static void getClientAccountGreaterThan(Context ctx) {
@@ -97,7 +107,10 @@ public class AccountController {
 			ctx.status(404);
 			ctx.result("No such client exists");
 		}
-		ctx.json(dao.getClientAccountsByMinAmt(clientID, amount));
+		else {
+			ctx.json(dao.getClientAccountsByMinAmt(clientID, amount));
+		}
+		
 	}
 	
 	public static void getClientAccountRange(Context ctx) {
@@ -110,7 +123,10 @@ public class AccountController {
 			ctx.status(404);
 			ctx.result("No such client exists");
 		}
-		ctx.json(dao.getClientAccountsByRange(clientID, minAmount, maxAmount));
+		else {
+			ctx.json(dao.getClientAccountsByRange(clientID, minAmount, maxAmount));
+		}
+		
 	}
 	
 	public static void insertAccount(Context ctx) {
@@ -130,7 +146,10 @@ public class AccountController {
 			ctx.status(404);
 			ctx.result("No such account exists");
 		}
-		dao.update(clientID, amount);
+		else {
+			dao.update(accountID, amount);
+		}
+		
 	}
 	
 	public static void deleteAccount(Context ctx) {
@@ -141,7 +160,10 @@ public class AccountController {
 			ctx.status(404);
 			ctx.result("No such account exists");
 		}
-		dao.deleteAccount(accountID);
+		else {
+			dao.deleteAccount(accountID);
+		}
+		
 	}
 	
 	public static void depositOrWithdraw(Context ctx) {
@@ -154,20 +176,22 @@ public class AccountController {
 			ctx.result("No such account exists");
 		}
 		
-		String[] jsonObject = jsonParser(ctx.body());
-		if (jsonObject[0].equals("deposit")) {
-			dao.deposit(accountID, Float.parseFloat(jsonObject[1]));
-		}
-		
-		else if (jsonObject[0].equals("withdraw")) {
-			Account account = ctx.bodyAsClass(Account.class);
-			float balance = account.getBalance();
-			if (Validator.ifInsufficientFunds(balance, Float.parseFloat(jsonObject[1]))) {
-				ctx.status(422);
-				ctx.result("Insufficient funds");
+		else {
+			String[] jsonObject = jsonParser(ctx.body());
+			if (jsonObject[0].equals("deposit")) {
+				dao.deposit(accountID, Float.parseFloat(jsonObject[1]));
 			}
-			else {
-				dao.withdraw(accountID, Float.parseFloat(jsonObject[1]));
+			
+			else if (jsonObject[0].equals("withdraw")) {
+				Account account = dao.getClientAccountByID(clientID, accountID);
+				float balance = account.getBalance();
+				if (Validator.ifInsufficientFunds(balance, Float.parseFloat(jsonObject[1]))) {
+					ctx.status(422);
+					ctx.result("Insufficient funds");
+				}
+				else {
+					dao.withdraw(accountID, Float.parseFloat(jsonObject[1]));
+				}
 			}
 		}
 	}
@@ -180,26 +204,28 @@ public class AccountController {
 		int accountFrom = Integer.parseInt(ctx.pathParam("accountFrom"));
 		int accountTo = Integer.parseInt(ctx.pathParam("accountTo"));
 		
+		String[] jsonObject = jsonParser(ctx.body());
+		
 		if (!Validator.ifClientExists(clientDAO, clientFrom)) {
 			ctx.status(404);
 			ctx.result("No such client exists");
 		}
 		
-		if (!Validator.ifAccountExists(accountDAO, clientFrom, accountFrom)) {
+		else if (!Validator.ifAccountExists(accountDAO, clientFrom, accountFrom)) {
 			ctx.status(404);
 			ctx.result("No such account exists");
 		}
 		
-		if (!Validator.ifAccountExists(accountDAO, clientTo, accountTo)) {
+		else if (!Validator.ifAccountExists(accountDAO, clientTo, accountTo)) {
 			ctx.status(404);
 			ctx.result("No such account exists");
 		}
 		
-		String[] jsonObject = jsonParser(ctx.body());
-		if (!Validator.ifInsufficientFunds(Float.parseFloat(jsonObject[1]), Float.parseFloat(jsonObject[1]))) {
+		else if (Validator.ifInsufficientFunds(Float.parseFloat(jsonObject[1]), Float.parseFloat(jsonObject[1]))) {
 			ctx.status(422);
 			ctx.result("Insufficient funds");
 		}
+		
 		else {
 			accountDAO.withdraw(accountFrom, Float.parseFloat(jsonObject[1]));
 			accountDAO.deposit(accountTo, Float.parseFloat(jsonObject[1]));
